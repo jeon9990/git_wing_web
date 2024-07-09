@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>쇼핑몰 - 상품 목록</title>
+    <style>
+        :root {
+            --main-color: #3DDC97;
+            --secondary-color: #1A1A2E;
+            --background-color: #F0F0F0;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        header {
+            background-color: var(--secondary-color);
+            color: white;
+            text-align: center;
+            padding: 1.5em 0;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        .search-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .search-container form {
+            display: inline-block;
+        }
+
+        .search-container input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid var(--main-color);
+            border-radius: 4px;
+            width: 300px;
+            margin-right: 10px;
+        }
+
+        .search-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--main-color);
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .search-container button:hover {
+            background-color: #32C787;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .product-card img {
+            max-width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .product-card a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .product-card a:visited,
+        .product-card a:hover,
+        .product-card a:active {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .product-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 10px 0;
+        }
+
+        .product-info-left {
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .product-info-right {
+            text-align: right;
+        }
+
+        .product-info p {
+            margin: 5px 0;
+        }
+
+        .stock {
+            color: var(--main-color);
+            font-weight: bold;
+        }
+
+        .scroll-buttons {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .scroll-buttons button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--main-color);
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 0 10px;
+        }
+
+        .scroll-buttons button:hover {
+            background-color: #32C787;
+        }
+
+        .category-buttons, .type-buttons {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .category-buttons button, .type-buttons button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--main-color);
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 10px; /* 간격 추가 */
+        }
+
+        .category-buttons button:hover, .type-buttons button:hover {
+            background-color: #32C787;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>상품 목록</h1>
+    </header>
+    
+    <div class="search-container">
+        <form onsubmit="handleSearch(event)">
+            <input type="text" name="query" placeholder="상품 검색">
+            <button type="submit">검색</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <div class="category-buttons">
+            <button onclick="filterByCategory('winter')">겨울잡화</button>
+            <button onclick="filterByCategory('marvel')">마블</button>
+            <button onclick="filterByCategory('frozen')">겨울왕국</button>
+            <button onclick="filterByCategory('disney')">디즈니</button>
+            <button onclick="filterByCategory('mickey')">미키마우스</button>
+            <button onclick="filterByCategory('etc')">기타</button>
+        </div>
+        
+        <div class="type-buttons winter hidden">
+            <button onclick="filterByType('후드워머')">후드워머</button>
+            <button onclick="filterByType('방한세트')">방한세트</button>
+            <button onclick="filterByType('귀마개')">귀마개</button>
+            <button onclick="filterByType('마스크')">마스크</button>
+            <button onclick="filterByType('장갑')">장갑</button>
+        </div>
+
+        <div class="type-buttons marvel hidden">
+            <!-- 마블 관련 버튼 추가 -->
+            <button onclick="filterByType('덧신')">덧신</button>
+            <button onclick="filterByType('크로스')">크로스</button>
+            <button onclick="filterByType('배낭')">배낭</button>
+        </div>
+        
+        <div class="type-buttons frozen hidden">
+            <!-- 겨울왕국 관련 버튼 추가 -->
+            <button onclick="filterByType('레인부츠')">레인부츠</button>
+            <button onclick="filterByType('우의')">우의</button>
+        </div>
+        
+        <div class="type-buttons disney hidden">
+            <!-- 디즈니 관련 버튼 추가 -->
+        </div>
+        
+        <div class="type-buttons mickey hidden">
+            <!-- 미키마우스 관련 버튼 추가 -->
+        </div>
+        
+        <div class="type-buttons etc hidden">
+            <!-- 기타 관련 버튼 추가 -->
+        </div>
+
+        <div class="product-grid">
+            <!-- 검색 결과가 여기에 동적으로 추가됩니다. -->
+            {% for product in products %}
+            <div class="product-card">
+                <a href="{{ url_for('product_detail', code=product.code) }}">
+                    <img src="{{ product.thumbnail }}" alt="{{ product.name }}">
+                    <h3>{{ product.name }}</h3>
+                    <div class="product-info">
+                        <div class="product-info-left">
+                            <p>{{ product.code }}</p>
+                        </div>
+                        <div class="product-info-right">
+                            <p>{{ product.option1_detail }}</p>
+                            <p>{{ product.option2_detail }}</p>
+                            <p class="stock">재고: {{ product.stock }}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="scroll-buttons">
+        <button onclick="goToHomePage()">처음으로</button>
+    </div>
+
+    <script>
+        async function handleSearch(event) {
+            event.preventDefault();
+            const query = document.querySelector('input[name="query"]').value;
+            const response = await fetch(`/search?query=${query}`);
+            if (response.status === 404) {
+                const data = await response.json();
+                alert(data.message);
+            } else {
+                const products = await response.json();
+                renderProducts(products);
+            }
+        }
+
+        function renderProducts(products) {
+            const productGrid = document.querySelector('.product-grid');
+            productGrid.innerHTML = '';
+            if (products.length === 0) {
+                productGrid.innerHTML = '<p>검색 결과가 없습니다.</p>';
+            } else {
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.classList.add('product-card');
+
+                    const productLink = document.createElement('a');
+                    productLink.href = `/product_detail/${product.code}`;
+
+                    const productImage = document.createElement('img');
+                    productImage.src = product.thumbnail;
+                    productImage.alt = product.name;
+
+                    const productName = document.createElement('h3');
+                    productName.textContent = product.name;
+
+                    const productInfo = document.createElement('div');
+                    productInfo.classList.add('product-info');
+
+                    const productInfoLeft = document.createElement('div');
+                    productInfoLeft.classList.add('product-info-left');
+
+                    const productCode = document.createElement('p');
+                    productCode.textContent = product.code;
+                    productInfoLeft.appendChild(productCode);
+
+                    const productInfoRight = document.createElement('div');
+                    productInfoRight.classList.add('product-info-right');
+
+                    const option1Detail = document.createElement('p');
+                    option1Detail.textContent = product.option1_detail;
+
+                    const option2Detail = document.createElement('p');
+                    option2Detail.textContent = product.option2_detail;
+
+                    const stockInfo = document.createElement('p');
+                    stockInfo.classList.add('stock');
+                    stockInfo.textContent = `재고: ${parseInt(product.stock, 10)}`;
+
+                    productInfoRight.appendChild(option1Detail);
+                    productInfoRight.appendChild(option2Detail);
+                    productInfoRight.appendChild(stockInfo);
+
+                    productInfo.appendChild(productInfoLeft);
+                    productInfo.appendChild(productInfoRight);
+
+                    productLink.appendChild(productImage);
+                    productLink.appendChild(productName);
+                    productLink.appendChild(productInfo);
+
+                    productCard.appendChild(productLink);
+                    productGrid.appendChild(productCard);
+                });
+            }
+        }
+
+        function filterByCategory(category) {
+            const typeSections = document.querySelectorAll('.type-buttons');
+            typeSections.forEach(section => section.classList.add('hidden'));
+            
+            const selectedSection = document.querySelector(`.type-buttons.${category}`);
+            if (selectedSection) {
+                selectedSection.classList.remove('hidden');
+            }
+        }
+
+        function filterByType(type) {
+            window.location.href = `/type/${type}`;
+        }
+
+        function goToHomePage() {
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>
