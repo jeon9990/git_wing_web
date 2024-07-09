@@ -3,7 +3,6 @@ import pandas as pd
 import os
 import math
 
-
 # 데이터 로딩 함수
 @st.cache_data
 def load_products():
@@ -45,6 +44,26 @@ def main():
     # 데이터 로드
     products_df = load_products()
 
+    # 사이드바에 필터 추가
+    st.sidebar.header("필터")
+    categories = sorted(set(products_df['category']))
+    selected_category = st.sidebar.selectbox("카테고리 선택", ['전체'] + categories)
+
+    types = sorted(set(products_df['type']))
+    selected_type = st.sidebar.selectbox("타입 선택", ['전체'] + types)
+
+    # 검색 기능
+    search_query = st.sidebar.text_input("제품 검색")
+
+    # 필터링
+    if selected_category != '전체':
+        products_df = products_df[products_df['category'] == selected_category]
+    if selected_type != '전체':
+        products_df = products_df[products_df['type'] == selected_type]
+    if search_query:
+        products_df = products_df[products_df['name'].str.contains(search_query, case=False) |
+                                  products_df['code'].str.contains(search_query, case=False)]
+
     # 페이지네이션을 위한 변수
     items_per_page = 30
     total_items = len(products_df)
@@ -59,28 +78,6 @@ def main():
 
     # 현재 페이지에 표시할 항목 선택
     current_page_items = products_df.iloc[start_idx:end_idx]
-
-    # 사이드바에 필터 추가
-    st.sidebar.header("필터")
-    categories = sorted(set(products_df['category']))
-    selected_category = st.sidebar.selectbox("카테고리 선택", ['전체'] + categories)
-
-    types = sorted(set(products_df['type']))
-    selected_type = st.sidebar.selectbox("타입 선택", ['전체'] + types)
-
-    # 검색 기능
-    search_query = st.sidebar.text_input("제품 검색")
-
-    # 필터링
-    if selected_category != '전체':
-        current_page_items = current_page_items[current_page_items['category'] == selected_category]
-    if selected_type != '전체':
-        current_page_items = current_page_items[current_page_items['type'] == selected_type]
-    if search_query:
-        current_page_items = current_page_items[
-            current_page_items['name'].str.contains(search_query, case=False) |
-            current_page_items['code'].str.contains(search_query, case=False)
-        ]
 
     # 제품 표시
     for i, product in current_page_items.iterrows():
