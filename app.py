@@ -92,7 +92,7 @@ def main():
 
             # 상세 정보 열기/닫기 버튼
             button_label = f"상세 정보 {'닫기' if st.session_state.get('show_details_' + product['code'], False) else '보기'} ({product['code']})"
-            if st.button(button_label, key=f"toggle_button_{i}"):
+            if st.button(button_label, key=f"toggle_button_{start_idx + i}"):
                 st.session_state[f'show_details_{product["code"]}'] = not st.session_state.get(
                     f'show_details_{product["code"]}', False)
 
