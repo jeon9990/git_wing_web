@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import os
 
-
 # 데이터 로딩 함수
 @st.cache_data
 def load_products():
@@ -64,7 +63,7 @@ def main():
                                   products_df['code'].str.contains(search_query, case=False)]
 
     # 제품 표시
-    for _, product in products_df.iterrows():
+    for i, product in products_df.iterrows():
         col1, col2 = st.columns([1, 3])
         with col1:
             st.image(product['thumbnail'], width=200)
@@ -76,8 +75,8 @@ def main():
 
             # 상세 정보 열기/닫기 버튼
             if st.button(
-                    f"상세 정보 {'닫기' if st.session_state.get('show_details_' + product['code'], False) else '보기'} ({product['code']})",
-                    key=product['code']
+                f"상세 정보 {'닫기' if st.session_state.get(f'show_details_{product['code']}', False) else '보기'} ({product['code']})",
+                key=f"toggle_button_{i}"
             ):
                 st.session_state[f'show_details_{product["code"]}'] = not st.session_state.get(
                     f'show_details_{product["code"]}', False)
