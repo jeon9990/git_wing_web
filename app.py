@@ -77,7 +77,7 @@ def main():
 
             # 상세 정보 열기/닫기 버튼
             if st.button(
-                    f"상세 정보 {'닫기' if st.session_state.get(f'show_details_{product['code']}') else '보기'} ({product['code']})"
+                    f"상세 정보 {'닫기' if st.session_state.get('show_details_' + product['code'], False) else '보기'} ({product['code']})"
             ):
                 st.session_state[f'show_details_{product["code"]}'] = not st.session_state.get(
                     f'show_details_{product["code"]}', False)
