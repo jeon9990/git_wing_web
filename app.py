@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 import os
-from io import BytesIO
-import base64
 
 
 # 데이터 로딩 함수
@@ -76,7 +74,15 @@ def main():
             st.write(f"코드: {product['code']}")
             st.write(f"가격: {product['price']:,}원")
             st.write(f"재고: {product['stock']}개")
-            if st.button(f"상세 정보 보기 ({product['code']})"):
+
+            # 상세 정보 열기/닫기 버튼
+            if st.button(
+                    f"상세 정보 {'닫기' if st.session_state.get(f'show_details_{product["code"]}', False) else '보기'} ({product['code']})"):
+                st.session_state[f'show_details_{product["code"]}'] = not st.session_state.get(
+                    f'show_details_{product["code"]}', False)
+
+            # 상세 정보 표시
+            if st.session_state.get(f'show_details_{product["code"]}', False):
                 show_product_detail(product)
 
 
@@ -92,6 +98,11 @@ def show_product_detail(product):
     st.write(f"마지막 입고일: {product['last_stock']}")
     st.write(f"타입: {product['type']}")
     st.write(f"카테고리: {product['category']}")
+
+    # 상세 이미지 표시
+    st.subheader("상세 설명")
+    for image_url in product['detail_page'].split(','):
+        st.image(image_url.strip(), use_column_width=True)
 
 
 if __name__ == "__main__":
