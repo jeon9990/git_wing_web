@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 
+
 # 데이터 로딩 함수
 @st.cache_data
 def load_products():
@@ -33,6 +34,7 @@ def load_products():
 
     df['category'] = df['code'].apply(get_category)
     return df
+
 
 # 메인 애플리케이션
 def main():
@@ -74,16 +76,15 @@ def main():
             st.write(f"재고: {product['stock']}개")
 
             # 상세 정보 열기/닫기 버튼
-            if st.button(
-                f"상세 정보 {'닫기' if st.session_state.get(f'show_details_{product['code']}', False) else '보기'} ({product['code']})",
-                key=f"toggle_button_{i}"
-            ):
+            button_label = f"상세 정보 {'닫기' if st.session_state.get('show_details_' + product['code'], False) else '보기'} ({product['code']})"
+            if st.button(button_label, key=f"toggle_button_{i}"):
                 st.session_state[f'show_details_{product["code"]}'] = not st.session_state.get(
                     f'show_details_{product["code"]}', False)
 
             # 상세 정보 표시
             if st.session_state.get(f'show_details_{product["code"]}', False):
                 show_product_detail(product)
+
 
 def show_product_detail(product):
     st.subheader(f"{product['name']} 상세 정보")
@@ -102,6 +103,7 @@ def show_product_detail(product):
     st.subheader("상세 설명")
     for image_url in product['detail_page'].split(','):
         st.image(image_url.strip(), use_column_width=True)
+
 
 if __name__ == "__main__":
     main()
