@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
+import math
 
 
 # 데이터 로딩 함수
@@ -44,6 +45,21 @@ def main():
     # 데이터 로드
     products_df = load_products()
 
+    # 페이지네이션을 위한 변수
+    items_per_page = 30
+    total_items = len(products_df)
+    total_pages = math.ceil(total_items / items_per_page)
+
+    # 현재 페이지 번호를 선택할 수 있는 위젯 추가
+    current_page = st.sidebar.number_input('페이지', min_value=1, max_value=total_pages, value=1)
+
+    # 현재 페이지의 시작과 끝 인덱스 계산
+    start_idx = (current_page - 1) * items_per_page
+    end_idx = min(start_idx + items_per_page, total_items)
+
+    # 현재 페이지에 표시할 항목 선택
+    current_page_items = products_df.iloc[start_idx:end_idx]
+
     # 사이드바에 필터 추가
     st.sidebar.header("필터")
     categories = sorted(set(products_df['category']))
@@ -57,15 +73,17 @@ def main():
 
     # 필터링
     if selected_category != '전체':
-        products_df = products_df[products_df['category'] == selected_category]
+        current_page_items = current_page_items[current_page_items['category'] == selected_category]
     if selected_type != '전체':
-        products_df = products_df[products_df['type'] == selected_type]
+        current_page_items = current_page_items[current_page_items['type'] == selected_type]
     if search_query:
-        products_df = products_df[products_df['name'].str.contains(search_query, case=False) |
-                                  products_df['code'].str.contains(search_query, case=False)]
+        current_page_items = current_page_items[
+            current_page_items['name'].str.contains(search_query, case=False) |
+            current_page_items['code'].str.contains(search_query, case=False)
+        ]
 
     # 제품 표시
-    for i, product in products_df.iterrows():
+    for i, product in current_page_items.iterrows():
         col1, col2 = st.columns([1, 3])
         with col1:
             st.image(product['thumbnail'], width=200)
