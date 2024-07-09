@@ -35,7 +35,6 @@ def load_products():
     df['category'] = df['code'].apply(get_category)
     return df
 
-
 # 메인 애플리케이션
 def main():
     st.set_page_config(page_title="제품 카탈로그", layout="wide")
@@ -77,7 +76,8 @@ def main():
 
             # 상세 정보 열기/닫기 버튼
             if st.button(
-                    f"상세 정보 {'닫기' if st.session_state.get('show_details_' + product['code'], False) else '보기'} ({product['code']})"
+                    f"상세 정보 {'닫기' if st.session_state.get('show_details_' + product['code'], False) else '보기'} ({product['code']})",
+                    key=product['code']
             ):
                 st.session_state[f'show_details_{product["code"]}'] = not st.session_state.get(
                     f'show_details_{product["code"]}', False)
@@ -85,7 +85,6 @@ def main():
             # 상세 정보 표시
             if st.session_state.get(f'show_details_{product["code"]}', False):
                 show_product_detail(product)
-
 
 def show_product_detail(product):
     st.subheader(f"{product['name']} 상세 정보")
@@ -104,7 +103,6 @@ def show_product_detail(product):
     st.subheader("상세 설명")
     for image_url in product['detail_page'].split(','):
         st.image(image_url.strip(), use_column_width=True)
-
 
 if __name__ == "__main__":
     main()
